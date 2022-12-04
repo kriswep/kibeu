@@ -1,5 +1,8 @@
 import './globals.css';
 
+import LoginBtn from './login-btn';
+import Providers from './providers';
+
 export default function RootLayout({
   children,
 }: {
@@ -12,7 +15,16 @@ export default function RootLayout({
         head.tsx. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
       */}
       <head />
-      <body>{children}</body>
+
+      <body>
+        <Providers>
+          <header className="flex">
+            <h1 className="text-lg font-bold p-4">Header</h1>
+            <LoginBtn />
+          </header>
+          <div className="flex p-4">{children}</div>
+        </Providers>
+      </body>
     </html>
   );
 }
