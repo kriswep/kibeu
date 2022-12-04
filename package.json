@@ -25,6 +25,12 @@
     "typescript": "4.9.3"
   },
   "devDependencies": {
-    "concurrently": "^7.6.0"
+    "concurrently": "^7.6.0",
+    "prettier": "^2.8.0"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all",
+    "tabWidth": 2
   }
 }
