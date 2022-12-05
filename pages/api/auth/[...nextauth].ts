@@ -1,12 +1,17 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GithubProvider from 'next-auth/providers/github';
+import { JWT } from 'next-auth/jwt';
+import { HasuraAdapter } from 'next-auth-hasura-adapter';
+import * as jsonwebtoken from 'jsonwebtoken';
 
 export const authOptions: NextAuthOptions = {
-  session: {
-    strategy: 'jwt',
-  },
   // Configure one or more authentication providers
   providers: [
+    // GithubProvider({
+    //   clientId: process.env.GITHUB_ID!,
+    //   clientSecret: process.env.GITHUB_SECRET!,
+    // }),
     CredentialsProvider({
       // The name to display on the sign in form (e.g. 'Sign in with...')
       name: 'Credentials',
@@ -40,7 +45,7 @@ export const authOptions: NextAuthOptions = {
         // return null;
         // Add logic here to look up the user from the credentials supplied
         const user = {
-          id: '1',
+          id: 'e1f457a4-f12e-46c3-9e94-ec1cd362e9dd',
           name: 'J Smith',
           email: 'jsmith@example.com',
           extra: 'info',
@@ -59,13 +64,61 @@ export const authOptions: NextAuthOptions = {
     }),
     // ...add more providers here
   ],
+  // adapter: HasuraAdapter({
+  //   endpoint: process.env.HASURA_GRAPHQL_ENDPOINT!,
+  //   adminSecret: process.env.HASURA_ADMIN_SECRET!,
+  // }),
+  theme: {
+    colorScheme: 'auto',
+  },
+  // Use JWT strategy so we can forward them to Hasura
+  session: { strategy: 'jwt' },
+  // Encode and decode your JWT with the HS256 algorithm
+  jwt: {
+    encode: ({ secret, token }) => {
+      const encodedToken = jsonwebtoken.sign(token!, secret, {
+        algorithm: 'HS256',
+      });
+      return encodedToken;
+    },
+    decode: async ({ secret, token }) => {
+      const decodedToken = jsonwebtoken.verify(token!, secret, {
+        algorithms: ['HS256'],
+      });
+      return decodedToken as JWT;
+    },
+  },
+
+  // callbacks: {
+  //   jwt({ token, user }) {
+  //     // update token
+  //     if (user?.email) {
+  //       token.new = user.email;
+  //     }
+  //     return token;
+  //   },
+  // },
+
   callbacks: {
-    jwt({ token, user }) {
-      // update token
-      if (user?.email) {
-        token.new = user.email;
+    // Add the required Hasura claims
+    // https://hasura.io/docs/latest/graphql/core/auth/authentication/jwt/#the-spec
+    async jwt({ token }) {
+      return {
+        ...token,
+        'https://hasura.io/jwt/claims': {
+          'x-hasura-allowed-roles': ['user'],
+          'x-hasura-default-role': 'user',
+          'x-hasura-role': 'user',
+          'x-hasura-user-id': token.sub,
+        },
+      };
+    },
+    // Add user ID to the session
+    session: async ({ session, token }) => {
+      if (session?.user) {
+        session.user.id = token.sub!;
       }
-      return token;
+      return session;
     },
   },
 };
