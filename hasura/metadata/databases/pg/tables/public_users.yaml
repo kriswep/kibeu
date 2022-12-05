@@ -1,0 +1,15 @@
+table:
+  name: users
+  schema: public
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - email
+        - emailVerified
+        - id
+        - image
+        - name
+      filter:
+        id:
+          _eq: X-Hasura-User-Id
