@@ -42,3 +42,19 @@ Start hasura console via cli
 cd hasura
 npx hasura console
 ```
+
+## Deployment
+
+docker compose -f docker/development/docker-compose.yml --env-file ./.env build
+docker compose -f docker/development/docker-compose.yml --env-file ./.env up -d
+
+docker compose -f docker/development/docker-compose.yml --env-file ./.env down
+
+cd hasura
+npx hasura metadata diff
+npx hasura metadata apply
+npx hasura migrate status
+npx hasura migrate apply
+npx hasura metadata apply
+
+npx hasura console
