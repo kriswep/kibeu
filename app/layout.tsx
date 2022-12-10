@@ -1,5 +1,6 @@
 import './globals.css';
 
+import Link from 'next/link';
 import LoginBtn from './login-btn';
 import Providers from './providers';
 
@@ -19,7 +20,9 @@ export default function RootLayout({
       <body>
         <Providers>
           <header className="flex">
-            <h1 className="text-lg font-bold p-4">Header</h1>
+            <h1 className="text-lg font-bold p-4">
+              <Link href="/">Header</Link>
+            </h1>
             <LoginBtn />
           </header>
           <div className="flex p-4">{children}</div>

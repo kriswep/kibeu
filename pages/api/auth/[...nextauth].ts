@@ -1,17 +1,23 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import GithubProvider from 'next-auth/providers/github';
 import { JWT } from 'next-auth/jwt';
-import { HasuraAdapter } from 'next-auth-hasura-adapter';
 import * as jsonwebtoken from 'jsonwebtoken';
 
 export const authOptions: NextAuthOptions = {
+  // Use JWT strategy so we can forward them to Hasura
+  session: {
+    strategy: 'jwt',
+    // maxAge: 30 * 24 * 60 * 60
+  },
+  pages: {
+    signIn: '/signin',
+    // signOut: '/auth/signout',
+    // error: '/auth/error', // Error code passed in query string as ?error=
+    // verifyRequest: '/auth/verify-request', // (used for check email message)
+    // newUser: '/auth/new-user' // New users will be directed here on first sign in (leave the property out if not of interest)
+  },
   // Configure one or more authentication providers
   providers: [
-    // GithubProvider({
-    //   clientId: process.env.GITHUB_ID!,
-    //   clientSecret: process.env.GITHUB_SECRET!,
-    // }),
     CredentialsProvider({
       // The name to display on the sign in form (e.g. 'Sign in with...')
       name: 'Credentials',
@@ -64,15 +70,6 @@ export const authOptions: NextAuthOptions = {
     }),
     // ...add more providers here
   ],
-  // adapter: HasuraAdapter({
-  //   endpoint: process.env.HASURA_GRAPHQL_ENDPOINT!,
-  //   adminSecret: process.env.HASURA_ADMIN_SECRET!,
-  // }),
-  theme: {
-    colorScheme: 'auto',
-  },
-  // Use JWT strategy so we can forward them to Hasura
-  session: { strategy: 'jwt' },
   // Encode and decode your JWT with the HS256 algorithm
   jwt: {
     encode: ({ secret, token }) => {
@@ -88,16 +85,6 @@ export const authOptions: NextAuthOptions = {
       return decodedToken as JWT;
     },
   },
-
-  // callbacks: {
-  //   jwt({ token, user }) {
-  //     // update token
-  //     if (user?.email) {
-  //       token.new = user.email;
-  //     }
-  //     return token;
-  //   },
-  // },
 
   callbacks: {
     // Add the required Hasura claims
