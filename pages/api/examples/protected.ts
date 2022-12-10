@@ -18,9 +18,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     });
 
     const query = gql`
-      query GetUserName($id: uuid!) {
+      query GetUserMail($id: uuid!) {
         users_by_pk(id: $id) {
-          name
+          email
         }
       }
     `;
@@ -32,7 +32,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       { authorization: `Bearer ${token}` },
     );
     res.send({
-      content: `This is protected content. Your name is ${user.name}`,
+      content: `This is protected content. Your mail is ${user.email}`,
     });
   } else {
     res.send({

@@ -6,7 +6,7 @@ type Data = {};
 
 export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   // If you don't have NEXTAUTH_SECRET set, you will have to pass your secret as `secret` to `getToken`
-  const token = await getToken({ req });
+  const token = await getToken({ req, raw: true });
   if (token) {
     // Signed in
     console.log('JSON Web Token', JSON.stringify(token, null, 2));
@@ -14,5 +14,5 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     // Not Signed in
     res.status(401);
   }
-  res.end();
+  res.end(token);
 };

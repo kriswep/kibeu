@@ -1,4 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import * as argon2 from 'argon2';
+import { request, gql } from 'graphql-request';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
@@ -14,6 +16,32 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
     if (password.length < 6) {
       return fieldError('Password too short.');
+    }
+
+    const hash = await argon2.hash(password);
+
+    const query = gql`
+      mutation RegisterUser($email: String!, $password: String!) {
+        insert_users(objects: { email: $email, password: $password }) {
+          affected_rows
+          returning {
+            id
+            email
+          }
+        }
+      }
+    `;
+    try {
+      const gqlResponse = await request(
+        process.env.HASURA_GRAPHQL_ENDPOINT!,
+        query,
+        { email, password: hash },
+        { 'x-hasura-admin-secret': process.env.HASURA_ADMIN_SECRET! },
+      );
+      console.log(gqlResponse);
+    } catch (error) {
+      // console.error(JSON.stringify(error, undefined, 2));
+      return fieldError('User could not be created!');
     }
 
     try {
