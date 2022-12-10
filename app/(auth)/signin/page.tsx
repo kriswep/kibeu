@@ -9,9 +9,10 @@ export default async function SignInPage({
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
   //   const csrfToken = await getCsrfToken();
-  const callbackUrl = typeof (searchParams?.callbackUrl === 'String')
-    ? String(searchParams?.callbackUrl)
-    : '/';
+  const callbackUrl =
+    typeof searchParams?.callbackUrl === 'string'
+      ? searchParams.callbackUrl
+      : '/';
   return (
     <>
       <SignIn callbackUrl={callbackUrl} />

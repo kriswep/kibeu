@@ -30,6 +30,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
+        console.log(credentials);
         // // You need to provide your own logic here that takes the credentials
         // // submitted and returns either a object representing a user or value
         // // that is false/null if the credentials are invalid.
@@ -56,7 +57,7 @@ export const authOptions: NextAuthOptions = {
           email: 'jsmith@example.com',
           extra: 'info',
         };
-
+        // throw new Error('Test');
         if (user) {
           // Any object returned will be saved in `user` property of the JWT
           return user;

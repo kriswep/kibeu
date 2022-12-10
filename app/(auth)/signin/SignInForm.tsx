@@ -8,7 +8,7 @@ type Props = {
   callbackUrl: string;
 };
 export default function SignIn({ callbackUrl }: Props) {
-  const [user, setUser] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const router = useRouter();
@@ -18,7 +18,7 @@ export default function SignIn({ callbackUrl }: Props) {
     event.stopPropagation();
 
     signIn('credentials', {
-      email: user,
+      email,
       password,
       callbackUrl,
       redirect: false,
@@ -41,19 +41,17 @@ export default function SignIn({ callbackUrl }: Props) {
     <form onSubmit={handleLogin}>
       {loginError}
       <label>
-        Email:{' '}
+        Email:
         <input
           type="text"
-          name="username"
-          value={user}
-          onChange={(e) => setUser(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
       </label>
       <label>
-        Password:{' '}
+        Password:
         <input
           type="password"
-          name="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
