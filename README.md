@@ -58,3 +58,11 @@ npx hasura migrate apply
 npx hasura metadata apply
 
 npx hasura console
+
+### Squah migrations
+
+npx hasura migrate squash --name "<descr>" --from Version
+
+**mark as applied without reapplying changed migration (only if needed)**
+npx hasura migrate apply --version "Version" --skip-execution
+npx hasura migrate status
