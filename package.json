@@ -8,9 +8,12 @@
     "dev:turbo": "concurrently \"next dev --turbo\" \"tailwindcss --input input.css --output output.css --watch\"",
     "build:turbo": "tailwindcss input.css --output output.css && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "codegen": "graphql-codegen --config codegen.ts",
+    "_codegen": "graphql-codegen --config codegen.ts dotenv_config_path=./.env"
   },
   "dependencies": {
+    "@graphql-codegen/client-preset": "^1.2.3",
     "@types/node": "18.11.10",
     "@types/react": "18.0.26",
     "@types/react-dom": "18.0.9",
@@ -31,8 +34,10 @@
     "typescript": "4.9.3"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^2.16.1",
     "@types/jsonwebtoken": "^8.5.9",
     "concurrently": "^7.6.0",
+    "dotenv": "^16.0.3",
     "prettier": "^2.8.0"
   },
   "prettier": {

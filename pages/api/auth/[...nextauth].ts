@@ -3,7 +3,9 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { JWT } from 'next-auth/jwt';
 import * as jsonwebtoken from 'jsonwebtoken';
 import * as argon2 from 'argon2';
-import { request, gql } from 'graphql-request';
+import { request } from 'graphql-request';
+import { graphql } from '@/gql/gql';
+import { GetUserQuery } from '@/gql/graphql';
 
 export const authOptions: NextAuthOptions = {
   // Use JWT strategy so we can forward them to Hasura
@@ -32,8 +34,10 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
-        console.log(credentials);
-        const query = gql`
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+        const query = graphql(/* GraphQL */ `
           query GetUser($email: String!) {
             users(where: { email: { _eq: $email } }, limit: 1) {
               id
@@ -41,23 +45,21 @@ export const authOptions: NextAuthOptions = {
               email
             }
           }
-        `;
+        `);
         try {
-          const { users } = await request(
+          const { users }: GetUserQuery = await request(
             process.env.HASURA_GRAPHQL_ENDPOINT!,
             query,
-            { email: credentials?.email },
+            { email: credentials.email },
             { 'x-hasura-admin-secret': process.env.HASURA_ADMIN_SECRET! },
           );
-          const user = users[0] as User;
+          const user = users[0];
 
           if (
+            user.password &&
             user.id.length > 0 &&
-            user.email === credentials?.email &&
-            (await argon2.verify(
-              users[0].password,
-              credentials?.password || '',
-            ))
+            user.email === credentials.email &&
+            (await argon2.verify(user.password, credentials.password || ''))
           ) {
             return {
               id: user.id,

@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import * as argon2 from 'argon2';
 import { request, gql } from 'graphql-request';
+import { graphql } from '@/gql/gql';
+import { RegisterUserMutation } from '@/gql/graphql';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
@@ -20,8 +22,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     const hash = await argon2.hash(password);
 
-    const query = gql`
-      mutation RegisterUser($email: String!, $password: String!) {
+    const registerUser = graphql(/* GraphQL */ `
+      mutation registerUser($email: String!, $password: String!) {
         insert_users(objects: { email: $email, password: $password }) {
           affected_rows
           returning {
@@ -30,15 +32,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           }
         }
       }
-    `;
+    `);
     try {
-      const gqlResponse = await request(
+      const gqlResponse: RegisterUserMutation = await request(
         process.env.HASURA_GRAPHQL_ENDPOINT!,
-        query,
+        registerUser,
         { email, password: hash },
         { 'x-hasura-admin-secret': process.env.HASURA_ADMIN_SECRET! },
       );
-      console.log(gqlResponse);
     } catch (error) {
       // console.error(JSON.stringify(error, undefined, 2));
       return fieldError('User could not be created!');
@@ -48,7 +49,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       // create user in Hasura
       return res.status(200).end();
     } catch (err: any) {
-      return res.status(503).json({ err: err.toString() });
+      return res.status(503).json({ err: err?.toString() });
     }
   } else {
     return res

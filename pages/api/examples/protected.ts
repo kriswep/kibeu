@@ -2,7 +2,9 @@
 import { getSession } from 'next-auth/react';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
-import { request, gql } from 'graphql-request';
+import { request } from 'graphql-request';
+import { graphql } from '@/gql/gql';
+import { GetUserMailQuery } from '@/gql/graphql';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getSession({ req });
@@ -17,22 +19,22 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       raw: true,
     });
 
-    const query = gql`
+    const query = graphql(`
       query GetUserMail($id: uuid!) {
         users_by_pk(id: $id) {
           email
         }
       }
-    `;
+    `);
 
-    const { users_by_pk: user } = await request(
+    const { users_by_pk: user }: GetUserMailQuery = await request(
       process.env.HASURA_GRAPHQL_ENDPOINT!,
       query,
       { id: session.user?.id },
       { authorization: `Bearer ${token}` },
     );
     res.send({
-      content: `This is protected content. Your mail is ${user.email}`,
+      content: `This is protected content. Your mail is ${user?.email}`,
     });
   } else {
     res.send({
