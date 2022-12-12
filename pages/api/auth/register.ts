@@ -4,20 +4,31 @@ import { request, gql } from 'graphql-request';
 import { graphql } from '@/gql/gql';
 import { RegisterUserMutation } from '@/gql/graphql';
 
+export function validateInputs(
+  fieldError: (errorText: string) => void,
+  email: any,
+  password: any,
+) {
+  if (typeof email !== 'string' || typeof password !== 'string') {
+    return fieldError('Missing parameters');
+  }
+
+  if (email.length < 3) {
+    return fieldError('E-Mail too short.');
+  }
+  if (password.length < 6) {
+    return fieldError('Password too short.');
+  }
+  return true;
+}
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     const fieldError = fieldErrorFactory(res);
     const { email, password } = req.body;
 
-    if (typeof email !== 'string' || typeof password !== 'string') {
-      return fieldError('Missing parameters');
-    }
-
-    if (email.length < 3) {
-      return fieldError('E-Mail too short.');
-    }
-    if (password.length < 6) {
-      return fieldError('Password too short.');
+    if (!validateInputs(fieldError, email, password)) {
+      return;
     }
 
     const hash = await argon2.hash(password);

@@ -8,6 +8,7 @@
     "dev:turbo": "concurrently \"next dev --turbo\" \"tailwindcss --input input.css --output output.css --watch\"",
     "build:turbo": "tailwindcss input.css --output output.css && next build",
     "start": "next start",
+    "test": "jest --watch",
     "cypress": "cypress open",
     "lint": "next lint",
     "codegen": "graphql-codegen --config codegen.ts"
@@ -35,10 +36,14 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^2.16.1",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
     "@types/jsonwebtoken": "^8.5.9",
     "concurrently": "^7.6.0",
     "cypress": "^12.0.2",
     "dotenv": "^16.0.3",
+    "jest": "^29.3.1",
+    "jest-environment-jsdom": "^29.3.1",
     "prettier": "^2.8.0"
   },
   "prettier": {
