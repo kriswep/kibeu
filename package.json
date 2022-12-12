@@ -8,9 +8,9 @@
     "dev:turbo": "concurrently \"next dev --turbo\" \"tailwindcss --input input.css --output output.css --watch\"",
     "build:turbo": "tailwindcss input.css --output output.css && next build",
     "start": "next start",
+    "cypress": "cypress open",
     "lint": "next lint",
-    "codegen": "graphql-codegen --config codegen.ts",
-    "_codegen": "graphql-codegen --config codegen.ts dotenv_config_path=./.env"
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@graphql-codegen/client-preset": "^1.2.3",
@@ -37,6 +37,7 @@
     "@graphql-codegen/cli": "^2.16.1",
     "@types/jsonwebtoken": "^8.5.9",
     "concurrently": "^7.6.0",
+    "cypress": "^12.0.2",
     "dotenv": "^16.0.3",
     "prettier": "^2.8.0"
   },
