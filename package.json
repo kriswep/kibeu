@@ -8,7 +8,8 @@
     "dev:turbo": "concurrently \"next dev --turbo\" \"tailwindcss --input input.css --output output.css --watch\"",
     "build:turbo": "tailwindcss input.css --output output.css && next build",
     "start": "next start",
-    "test": "jest --watch",
+    "test:watch": "jest --watch",
+    "test": "jest",
     "cypress": "cypress open",
     "lint": "next lint",
     "codegen": "graphql-codegen --config codegen.ts"
