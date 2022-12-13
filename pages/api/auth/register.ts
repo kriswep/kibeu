@@ -52,7 +52,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         { 'x-hasura-admin-secret': process.env.HASURA_ADMIN_SECRET! },
       );
     } catch (error) {
-      // console.error(JSON.stringify(error, undefined, 2));
+      console.error(JSON.stringify(error, undefined, 2));
       return fieldError('User could not be created!');
     }
 
