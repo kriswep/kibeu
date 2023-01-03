@@ -1,14 +1,19 @@
 import './globals.css';
+import { unstable_getServerSession } from 'next-auth/next';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
+import * as argon2 from 'argon2';
 
+import { ReactNode } from 'react';
 import Link from 'next/link';
 import LoginBtn from './login-btn';
 import Providers from './providers';
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+type Props = { children: ReactNode; session: any };
+
+export default async function RootLayout({ children, session }: Props) {
+  // const session2 = await unstable_getServerSession(authOptions);
+  // return <pre>{JSON.stringify(session, null, 2)}</pre>
+
   return (
     <html lang="en">
       {/*
@@ -18,11 +23,12 @@ export default function RootLayout({
       <head />
 
       <body>
-        <Providers>
+        <Providers session={session}>
           <header className="flex">
             <h1 className="text-lg font-bold p-4">
               <Link href="/">Header</Link>
             </h1>
+            <Link href="/protected">Protected</Link>
             <LoginBtn />
           </header>
           <div className="flex p-4">{children}</div>
