@@ -9,14 +9,15 @@ services:
     ports:
       - '3000:3000'
   postgres:
-    image: postgres:12
+    image: postgres:14
     restart: always
     volumes:
       - db_data:/var/lib/postgresql/data
+      - /dbbackup:/dbbackup
     environment:
       POSTGRES_PASSWORD: ${HASURA_DB_PASSWORD}
   graphql-engine:
-    image: hasura/graphql-engine:v2.16.1
+    image: hasura/graphql-engine:v2.29.0 #hasura/graphql-engine:v2.16.1
     ports:
       - '8080:8080'
     depends_on:
