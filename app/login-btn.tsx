@@ -2,6 +2,11 @@
 
 import { useSession, signIn, signOut } from 'next-auth/react';
 import UserInformation from './user-information';
+import {
+  NavigationMenuItem,
+  NavigationMenuLink,
+  navigationMenuTriggerStyle,
+} from 'components/ui/navigation-menu';
 
 export default function Component() {
   const { data: session } = useSession();
@@ -10,14 +15,28 @@ export default function Component() {
       <>
         Signed in as {session.user.email} <br />
         <UserInformation data={session.user} />
-        <button onClick={() => signOut()}>Sign out</button>
+        <NavigationMenuItem>
+          <button
+            onClick={() => signOut()}
+            className={navigationMenuTriggerStyle()}
+          >
+            Sign out
+          </button>
+        </NavigationMenuItem>
       </>
     );
   }
   return (
     <>
       Not signed in <br />
-      <button onClick={() => signIn()}>Sign in</button>
+      <NavigationMenuItem>
+        <button
+          onClick={() => signIn()}
+          className={navigationMenuTriggerStyle()}
+        >
+          Sign in
+        </button>
+      </NavigationMenuItem>
     </>
   );
 }
