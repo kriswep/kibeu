@@ -4,31 +4,51 @@ import { useSession, signIn, signOut } from 'next-auth/react';
 import UserInformation from './user-information';
 import {
   NavigationMenuItem,
-  NavigationMenuLink,
   navigationMenuTriggerStyle,
 } from 'components/ui/navigation-menu';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from 'components/ui/hover-card';
+import { Avatar, AvatarFallback, AvatarImage } from 'components/ui/avatar';
 
 export default function Component() {
   const { data: session } = useSession();
   if (session && session.user) {
     return (
       <>
-        Signed in as {session.user.email} <br />
-        <UserInformation data={session.user} />
         <NavigationMenuItem>
-          <button
-            onClick={() => signOut()}
-            className={navigationMenuTriggerStyle()}
-          >
-            Sign out
-          </button>
+          <HoverCard>
+            <HoverCardTrigger>
+              <Avatar>
+                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </HoverCardTrigger>
+            <HoverCardContent>
+              <NavigationMenuItem>
+                <button
+                  onClick={() => signOut()}
+                  className={navigationMenuTriggerStyle()}
+                >
+                  Sign out
+                </button>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                Signed in as {session.user.email}
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <UserInformation data={session.user} />
+              </NavigationMenuItem>
+            </HoverCardContent>
+          </HoverCard>
         </NavigationMenuItem>
       </>
     );
   }
   return (
     <>
-      Not signed in <br />
       <NavigationMenuItem>
         <button
           onClick={() => signIn()}
