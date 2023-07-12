@@ -4,22 +4,50 @@ import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+import { Button } from 'components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from 'components/ui/form';
+import { Input } from 'components/ui/input';
+import { useForm } from 'react-hook-form';
+
+const formSchema = z.object({
+  email: z.string().min(3, {
+    message: 'Email must be at least 3 characters.',
+  }),
+  password: z.string().min(6, {
+    message: 'Password must be at least 6 characters.',
+  }),
+});
+
 type Props = {
   callbackUrl: string;
 };
 export default function SignIn({ callbackUrl }: Props) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const router = useRouter();
 
-  const handleLogin = (event: React.FormEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
+  function onSubmit(values: z.infer<typeof formSchema>) {
     signIn('credentials', {
-      email,
-      password,
+      email: values.email,
+      password: values.password,
       callbackUrl,
       redirect: false,
     }).then(function (result) {
@@ -35,30 +63,45 @@ export default function SignIn({ callbackUrl }: Props) {
         router.push(result?.url || '/');
       }
     });
-  };
+  }
 
   return (
-    <form onSubmit={handleLogin}>
-      {loginError}
-      <label>
-        Email:
-        <input
-          type="text"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="Email" {...field} />
+              </FormControl>
+              {/* <FormDescription>
+                  This is your public display name.
+                </FormDescription> */}
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </label>
-      <label>
-        Password:
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="Password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </label>
-      <button type="submit">Sign in</button>
+        {loginError}
+        <Button type="submit">Sign in</Button>
 
-      <Link href="/signup">Register instead</Link>
-    </form>
+        <Link href="/signup">Register instead</Link>
+      </form>
+    </Form>
   );
 }
