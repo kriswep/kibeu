@@ -11,7 +11,7 @@ export const authOptions: NextAuthOptions = {
   // Use JWT strategy so we can forward them to Hasura
   session: {
     strategy: 'jwt',
-    // maxAge: 30 * 24 * 60 * 60
+    maxAge: 24 * 60 * 60
   },
   pages: {
     signIn: '/signin',
@@ -101,6 +101,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token }) {
       return {
         ...token,
+        'exp': Math.floor( ( new Date().getTime() / 1000 ) + ( authOptions.session?.maxAge || 0 ) ),
         'https://hasura.io/jwt/claims': {
           'x-hasura-allowed-roles': ['user'],
           'x-hasura-default-role': 'user',
